@@ -5,4 +5,4 @@ customscripts/_register.py
 .vscode
 .temp_script.py
 .test_xyz.xyz
-
+*.pyc
