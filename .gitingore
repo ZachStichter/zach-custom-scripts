@@ -1,7 +1,0 @@
-./.*
-customscripts/_register.py
-*.egg-info
-*.png
-.vscode
-.temp_script.py
-.test_xyz.xyz
