@@ -3,7 +3,7 @@ __provides__ = {'update_submission_script':'update_submission_script'}
 import re
 import os
 
-TARGET_FILE = os.path.join(os.path.dirname(__file__),"write_bash_submission_script.py")
+TARGET_FILE = os.path.join(os.path.dirname(__file__), "write_bash_submission_script.py")
 
 def update_submission_script():
     if not os.path.exists(TARGET_FILE):
@@ -15,37 +15,49 @@ def update_submission_script():
 
     print(f"Processing '{TARGET_FILE}'...\n")
 
-    # 1. Replace REGISTERED=False with REGISTERED=True
+    # 1. Replace REGISTERED=False with REGISTERED=True (Global or top-level)
     content, reg_count = re.subn(r'\bREGISTERED\s*=\s*False\b', 'REGISTERED=True', content)
     if reg_count > 0:
         print("Updated: REGISTERED=False -> REGISTERED=True")
 
     print("-" * 40)
 
-    # 2. Match variables OR dict keys assigned to None
-    # Group 1: The variable name or dict key (including quotes)
-    # Group 2: Either an '=' or a ':'
-    pattern = r'([\w"\']+)\s*([:=])\s*None'
+    # 2. Isolate the target function block
+    # Group 1: The function header
+    # Group 2: The body up until the next unindented line (\n\S) or end of file (\Z)
+    func_pattern = r'(def default_bash_submission_script\s*\(\s*jobname\s*\)\s*:)(.*?(?=\n\S|\Z))'
 
-    def ask_user_and_replace(match):
-        identifier = match.group(1)  # e.g., default_modules or "M"
-        operator = match.group(2)    # e.g., = or :
-        
-        # Strip quotes just for a cleaner terminal prompt
-        display_name = identifier.strip('"\'')
-        user_input = input(f"Enter value for '{display_name}': ")
-        
-        # Reconstruct the line preserving the correct operator (= or :)
-        return f'{identifier} {operator} "{user_input}"'
+    def process_function_scope(func_match):
+        header = func_match.group(1)
+        body = func_match.group(2)
 
-    # Run the substitution
-    updated_content = re.sub(pattern, ask_user_and_replace, content)
+        # Pattern for matching variables OR dict keys assigned to None
+        none_pattern = r'([\w"\']+)\s*([:=])\s*None'
 
-    with open(TARGET_FILE, "w") as f:
-        f.write(updated_content)
+        def ask_user_and_replace(match):
+            identifier = match.group(1)  # e.g., default_modules or "M"
+            operator = match.group(2)    # e.g., = or :
+            
+            # Strip quotes for a cleaner terminal prompt
+            display_name = identifier.strip('"\'')
+            user_input = input(f"Enter value for '{display_name}': ")
+            
+            return f'{identifier} {operator} "{user_input}"'
 
-    print("-" * 40)
-    print(f"Success! '{TARGET_FILE}' has been updated.")
+        # Run substitution ONLY inside this function's body
+        updated_body = re.sub(none_pattern, ask_user_and_replace, body)
+        return header + updated_body
+
+    # Apply the scoped replacement using re.DOTALL so '.' matches newlines
+    updated_content, count = re.subn(func_pattern, process_function_scope, content, flags=re.DOTALL)
+
+    if count == 0:
+        print("Warning: 'def default_bash_submission_script(jobname):' function block not found.")
+    else:
+        with open(TARGET_FILE, "w") as f:
+            f.write(updated_content)
+        print("-" * 40)
+        print(f"Success! '{TARGET_FILE}' has been updated safely.")
 
 if __name__ == "__main__":
     update_submission_script()
