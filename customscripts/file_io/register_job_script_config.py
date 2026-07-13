@@ -1,3 +1,5 @@
+__provides__ = {'update_submission_script':'update_submission_script'}
+
 import re
 import os
 

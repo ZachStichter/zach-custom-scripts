@@ -1,4 +1,5 @@
 from customscripts.file_io.read_xyz import read_xyz
+from customscripts.file_io.register_job_script_config import update_submission_script
 from customscripts.file_io.write_bash_submission_script import (
     write_bash_submission_script as get_bash_script,
 )
@@ -22,6 +23,7 @@ from customscripts.plotting.trajectory_visualization.plot_trajectory_by_cv impor
 )
 __all__ = [
     "read_xyz",
+    "update_submission_script",
     "get_bash_script",
     "get_default_bash_script",
     "export_default_line_plot",
