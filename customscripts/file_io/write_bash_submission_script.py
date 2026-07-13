@@ -5,7 +5,7 @@ __provides__ = {
 
 REGISTERED=False
 
-def write_bash_submission_script(user:str, required_source:str|None=None, required_modules:list[str]|None=None, required_conda_env:str|None=None, shebang:str="#!/bin/bash", kwargs)->str:
+def write_bash_submission_script(user:str, kwargs:dict, required_source:str|None=None, required_modules:list[str]|None=None, required_conda_env:str|None=None, shebang:str="#!/bin/bash")->str:
     """
     Returns a dummy submission script header with the provided options. The user will need to redirect this to a file.
 
