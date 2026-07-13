@@ -47,9 +47,9 @@ def write_bash_submission_script(user:str, kwargs:dict, required_source:str|None
             options_string += f"#$ -{str(arg)}\n"
         elif arg == 'M':
             if val == None or val == 'default':
-                options_string += f"#$ -{str(arg)} {str(user)}"
+                options_string += f"#$ -{str(arg)} {str(user)}\n"
             else:
-                options_string += f"#$ -{str(arg)} {str(val)}"
+                options_string += f"#$ -{str(arg)} {str(val)}\n"
         else:
             options_string += f"#$ -{str(arg)} {str(val)}\n"
 
