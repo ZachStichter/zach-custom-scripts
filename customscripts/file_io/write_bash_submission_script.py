@@ -82,5 +82,5 @@ def default_bash_submission_script(jobname):
     default_source = None
     default_user = None
 
-    return write_bash_submission_script(default_user,default_source,default_modules,default_conda, "#!/bin/bash",default_args)
+    return write_bash_submission_script(default_user,default_args,default_source,default_modules,default_conda, "#!/bin/bash")
     
