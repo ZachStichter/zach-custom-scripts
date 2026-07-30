@@ -214,8 +214,10 @@ def plot_customized_matplotlib(
         save_path = used_args.get("save_path", "./fig.png")
         fig.savefig(save_path)
 
-    if used_args.get("show", False) and used_args.get("return_obj", True):
+    if used_args.get("show", False) and used_args.get("return_obj", False):
         plt.show(block=False)
+    elif used_args.get("show", False):
+        plt.show(block=True)
 
     if used_args.get("return_obj", False):
         return fig, ax
