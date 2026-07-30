@@ -1,7 +1,9 @@
-__provides__ = {'update_submission_script':'update_submission_script'}
-
 import re
 import os
+
+__provides__ = {
+    'update_submission_script': 'update_submission_script'
+}
 
 TARGET_FILE = os.path.join(os.path.dirname(__file__), "write_bash_submission_script.py")
 
