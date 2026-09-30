@@ -6,3 +6,4 @@ customscripts/_register.py
 .temp_script.py
 .test_xyz.xyz
 *.pyc
+.[temp|to]*.py
