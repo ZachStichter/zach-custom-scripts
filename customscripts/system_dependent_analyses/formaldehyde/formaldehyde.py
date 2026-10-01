@@ -6,6 +6,7 @@ import customscripts
 __provides__ = {
     "process_traj": "process_formaldehyde_traj_to_dch_doh",
     "calculate_reactive_flux_parameters": "reactive_flux_params_formaldehyde_dch_doh",
+    "satisfies_rc_condition": "check_formaldehyde_d_dch_doh_geq_zero"
 }
 
 
@@ -116,3 +117,30 @@ def calculate_reactive_flux_parameters(
     sdot_0 = (-3 * s[0] + 4 * s[1] - s[2]) / (2 * dt)
 
     return s, float(sdot_0)
+
+
+def satisfies_rc_condition(pos: np.ndarray, vel: np.ndarray) -> bool:
+    """Checks whether atom 3 increases the reaction coordinate.
+
+    The reaction coordinate is defined as ``q = |r3 - r2| - |r3 - r1|``.
+    This function evaluates its instantaneous derivative using the velocity
+    of atom 3 and returns whether ``dq/dt`` is positive.
+
+    Args:
+        pos: Cartesian positions with shape ``(n_atoms, 3)``. The first three
+            rows correspond to atoms 1, 2, and 3, respectively.
+        vel: Cartesian velocities with shape ``(n_atoms, 3)``. The third row
+            contains the velocity of atom 3.
+
+    Returns:
+        ``True`` if the reaction coordinate is increasing, otherwise ``False``.
+    """
+    r1, r2, r3 = pos[0], pos[1], pos[2]
+    v3 = vel[2]
+
+    # Unit vectors from atoms 1 and 2 toward atom 3.
+    e13 = (r3 - r1) / np.linalg.norm(r3 - r1)
+    e23 = (r3 - r2) / np.linalg.norm(r3 - r2)
+
+    dq_dt = np.dot(e23 - e13, v3)
+    return bool(dq_dt > 0)
